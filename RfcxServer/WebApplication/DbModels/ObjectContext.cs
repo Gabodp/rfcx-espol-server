@@ -73,11 +73,11 @@ namespace WebApplication.DbModels
             }
         }
 
-        public IMongoCollection<Photo> Photos
+        public IMongoCollection<GalleryItem> Photos
         {
             get
             {
-                return _database.GetCollection<Photo>("Photo");
+                return _database.GetCollection<GalleryItem>("Photo");
             }
         }
 

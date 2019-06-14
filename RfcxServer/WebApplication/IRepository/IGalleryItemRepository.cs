@@ -5,14 +5,14 @@ using WebApplication.Models;
 
 namespace WebApplication.IRepository
 {
-    public interface IPhotoRepository
+    public interface IGalleryItemRepository
     {
-        List<Photo> Get();
-        Task<Photo> Get(string id);
-        Task<Photo> Get(int id);
-        Task<bool> Add(Photo item);
+        List<GalleryItem> Get();
+        Task<GalleryItem> Get(string id);
+        Task<GalleryItem> Get(int id);
+        Task<bool> Add(GalleryItem item);
         bool Remove(int id);
-        bool Update(int PhotoId, Photo item);
+        bool Update(int PhotoId, GalleryItem item);
         bool UpdateDescription(int id, string description);
     }
 

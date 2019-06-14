@@ -14,18 +14,18 @@ using System.Net;
 
 namespace WebApplication.Repository
 {
-    public class PhotoRepository : IPhotoRepository
+    public class GalleryItemRepository : IGalleryItemRepository
     {
         private readonly ObjectContext _context =null; 
         private readonly ISpecieRepository _SpecieRepository;
 
-        public PhotoRepository(IOptions<Settings> settings, ISpecieRepository SpecieRepository)
+        public GalleryItemRepository(IOptions<Settings> settings, ISpecieRepository SpecieRepository)
         {
             _context = new ObjectContext(settings);
             _SpecieRepository = SpecieRepository;
         } 
 
-        public List<Photo> Get()
+        public List<GalleryItem> Get()
         {
             try
             {
@@ -37,9 +37,9 @@ namespace WebApplication.Repository
             }
         }
 
-        public async Task<Photo> Get(string id)
+        public async Task<GalleryItem> Get(string id)
         {
-            var filter = Builders<Photo>.Filter.Eq("Id", id);
+            var filter = Builders<GalleryItem>.Filter.Eq("Id", id);
 
             try
             {
@@ -51,9 +51,9 @@ namespace WebApplication.Repository
             }
         }
 
-        public async Task<Photo> Get(int id)
+        public async Task<GalleryItem> Get(int id)
         {
-            var filter = Builders<Photo>.Filter.Eq("Id", id);
+            var filter = Builders<GalleryItem>.Filter.Eq("Id", id);
 
             try
             {
@@ -65,7 +65,7 @@ namespace WebApplication.Repository
             }
         }
 
-        public async Task<bool> Add(Photo item)
+        public async Task<bool> Add(GalleryItem item)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace WebApplication.Repository
         {
             try
             {
-                var filtro_foto = Builders<Photo>.Filter.Eq("Id", id);
+                var filtro_foto = Builders<GalleryItem>.Filter.Eq("Id", id);
                 DeleteResult actionResult = _context.Photos.DeleteOne(filtro_foto);
                 List<Specie> especies = _context.Species.Find(_ => true).ToList();
                 foreach(Specie especie in especies) {
@@ -129,7 +129,7 @@ namespace WebApplication.Repository
             }
         }
 
-        public bool Update(int PhotoId, Photo item)
+        public bool Update(int PhotoId, GalleryItem item)
         {
             try
             {
@@ -149,8 +149,8 @@ namespace WebApplication.Repository
 
         public bool UpdateDescription(int id, string description)
         {
-            var filter = Builders<Photo>.Filter.Eq("Id", id);
-            Photo photo  = _context.Photos.Find(filter).FirstOrDefault();
+            var filter = Builders<GalleryItem>.Filter.Eq("Id", id);
+            GalleryItem photo  = _context.Photos.Find(filter).FirstOrDefault();
             photo.Description = description;
             return Update(id, photo);
         }

@@ -32,15 +32,15 @@ namespace WebApplication
     public class SpecieController : Controller
     {
         private readonly ISpecieRepository _SpecieRepository;
-        private readonly IPhotoRepository _PhotoRepository;
+        private readonly IGalleryItemRepository _GalleryItemRepository;
         private readonly IFileProvider _fileProvider;
         private static readonly FormOptions _defaultFormOptions = new FormOptions();
 
-        public SpecieController(IFileProvider fileProvider, ISpecieRepository SpecieRepository, IPhotoRepository PhotoRepository)
+        public SpecieController(IFileProvider fileProvider, ISpecieRepository SpecieRepository, IGalleryItemRepository GalleryItemRepository)
         {
             _fileProvider = fileProvider;
             _SpecieRepository=SpecieRepository;
-            _PhotoRepository= PhotoRepository;
+            _GalleryItemRepository= GalleryItemRepository;
         }
 
         [HttpGet("index")]
@@ -113,7 +113,7 @@ namespace WebApplication
         [HttpGet("{specieId:int}/gallery/{photoId:int}")]
         public ActionResult Get(int specieId, int photoId)
         {
-            DirectoryInfo DI = new DirectoryInfo(Constants.RUTA_ARCHIVOS_IMAGENES_ESPECIES + specieId.ToString() + "/");
+            DirectoryInfo DI = new DirectoryInfo(Constants.test + specieId.ToString() + "/");
             foreach (var file in DI.GetFiles())
             {
                 string[] extension = (file.Name).Split('.');
@@ -124,15 +124,18 @@ namespace WebApplication
                     var content = new System.IO.MemoryStream(data);
                     if(extension[1] == "jpg" || extension[1] == "jpeg") {
                         return File(content, "image/jpeg", file.Name);
-                    } else {
-                        return File(content, "image/png", file.Name);
+                    }else if (extension[1] == "png") {
+                        return File(content, "imagfe/png", file.Name);
+                    }else{
+                        return File(content,"audio/mp3",file.Name);
                     }
                 }
             }     
             return null;       
         }
 
-        [HttpPost]
+
+        [HttpPost] //REVISAR
         public async Task<IActionResult> Post(string nombre_especie, string familia, List<string> descripciones, 
                                                 List<IFormFile> archivos)
         {
@@ -142,19 +145,22 @@ namespace WebApplication
             Specie spe = new Specie();
             spe.Name = nombre_especie;
             spe.Family = familia;
-            spe.Gallery = new List<Photo>();
+            spe.Gallery = new List<GalleryItem>();
             result = _SpecieRepository.Add(spe);
 
-            Core.MakeSpecieFolder(spe.Id.ToString());
+            Core.MakeSpecieFolder(spe.Id.ToString()); // MODIFICAR PARA CREAR CARPETA
 
+            //A Continuacion se guardan las imagenes ingresadas en el formulario
+            //en su respectivo directorio 
+            //Ejemplo de directorio: /var/rfcx-espol-server/resources/bpv/images/{especie(id)}/imagen(id).[jpeg/png]
             for(int i = 1; i < (archivos.Count + 1); i++)
             {
-                Photo photo = new Photo();
-                photo.Description = descripciones[i - 1];
-                _PhotoRepository.Add(photo);
-                _SpecieRepository.AddPhoto(spe.Id, photo);
+                GalleryItem item = new GalleryItem();
+                item.Description = descripciones[i - 1];
+                _GalleryItemRepository.Add(item);
+                _SpecieRepository.AddGalleryItem(spe.Id, item);
                 string[] extension = (archivos[i - 1].FileName).Split('.');
-                filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), photo.Id.ToString() + "." + extension[1]);
+                filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.Id.ToString() + "." + extension[1]);
                 if (archivos[i - 1].Length > 0)
                 {
                     using (var stream = new FileStream(filePath, FileMode.Create))
@@ -212,8 +218,8 @@ namespace WebApplication
         [HttpPatch("{id}/Gallery")]
         public bool PatchGallery(int id, [FromBody] Arrays json)
         {
-            bool valor = _SpecieRepository.UpdatePhoto(id, json.IdPhoto, json.Description);
-            valor = _PhotoRepository.UpdateDescription(json.IdPhoto, json.Description);
+            bool valor = _SpecieRepository.UpdateGalleryItem(id, json.IdPhoto, json.Description);
+            valor = _GalleryItemRepository.UpdateDescription(json.IdPhoto, json.Description);
             if(valor == true) {
                 TempData["edicion"] = 1;
             } else {
@@ -231,12 +237,12 @@ namespace WebApplication
 
             for(int i = 1; i < (archivos.Count + 1); i++)
             {
-                Photo photo = new Photo();
-                photo.Description = descripciones[i - 1];
-                result = _PhotoRepository.Add(photo);
-                _SpecieRepository.AddPhoto(especie.Id, photo);
+                GalleryItem item = new GalleryItem();
+                item.Description = descripciones[i - 1];
+                result = _GalleryItemRepository.Add(item);
+                _SpecieRepository.AddGalleryItem(especie.Id, item);
                 string[] extension = (archivos[i - 1].FileName).Split('.');
-                filePath = Path.Combine(Core.SpecieFolderPath(especie.Id.ToString()), photo.Id.ToString() + "." + extension[1]);
+                filePath = Path.Combine(Core.SpecieFolderPath(especie.Id.ToString()), item.Id.ToString() + "." + extension[1]);
                 if (archivos[i - 1].Length > 0)
                 {
                     using (var stream = new FileStream(filePath, FileMode.Create))

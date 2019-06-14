@@ -4,6 +4,7 @@ namespace WebApplication.Models
     {
         public const string APP_DIRECTORY="/home/estudiante/rfcx-espol-server/RfcxServer";
         public const string SERVER_DIRECTORY = "/var/rfcx-espol-server/";
+        public const string test = "C:/Users/gabpa/Documents/PASANTIAS COMUNITARIAS/rfcx-espol-server/RfcxServer/WebApplication/temp/";
         public const string BASE_LINK="station0";
         public const string BASE_URL="http://200.126.14.250/";
         public const string RUTA_ARCHIVOS = SERVER_DIRECTORY + "resources/";

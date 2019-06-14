@@ -8,14 +8,14 @@ using System;
 namespace WebApplication.Controllers
 {
     [Route("api/bpv/[controller]")]
-    public class PhotoController
+    public class GalleryItemController
     {
         
-        private readonly IPhotoRepository _PhotoRepository;
+        private readonly IGalleryItemRepository _GalleryItemRepository;
 
-        public PhotoController(IPhotoRepository PhotoRepository)
+        public GalleryItemController(IGalleryItemRepository GalleryItemRepository)
         {
-            _PhotoRepository=PhotoRepository;
+            _GalleryItemRepository=GalleryItemRepository;
         }
 
         [HttpGet()]
@@ -26,8 +26,8 @@ namespace WebApplication.Controllers
 
         private async Task<string> GetPhoto()
         {
-            var Photo= _PhotoRepository.Get();
-            return JsonConvert.SerializeObject(Photo);
+            var GalleryItem = _GalleryItemRepository.Get();
+            return JsonConvert.SerializeObject(GalleryItem);
         }
 
         [HttpGet("{id:int}")]
@@ -38,14 +38,14 @@ namespace WebApplication.Controllers
 
         private async Task<string> GetPhotoByIdInt(int id)
         {
-            var Photo= await _PhotoRepository.Get(id) ?? new Photo();
-            return JsonConvert.SerializeObject(Photo);
+            var GalleryItem = await _GalleryItemRepository.Get(id) ?? new GalleryItem();
+            return JsonConvert.SerializeObject(GalleryItem);
         }
 
         [HttpDelete("{id:int}")]
         public bool Delete(int id)
         {
-            bool valor = _PhotoRepository.Remove(id);
+            bool valor = _GalleryItemRepository.Remove(id);
             return true;
         }
 

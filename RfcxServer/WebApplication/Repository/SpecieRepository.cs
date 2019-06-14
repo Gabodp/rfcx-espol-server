@@ -142,7 +142,7 @@ namespace WebApplication.Repository
             return Update(id, specie);
         }
 
-        public bool UpdateGallery(int id, List<Photo> gallery)
+        public bool UpdateGallery(int id, List<GalleryItem> gallery)
         {
             var filter = Builders<Specie>.Filter.Eq("Id", id);
             Specie specie  = _context.Species.Find(filter).FirstOrDefault();
@@ -150,19 +150,19 @@ namespace WebApplication.Repository
             return Update(id, specie);
         }
 
-        public bool UpdatePhoto(int id, int id_photo, string description)
+        public bool UpdateGalleryItem(int id, int id_gallery_item, string _description)//ACTUALIZA SOLO DESCRIPCION
         {
             var filter = Builders<Specie>.Filter.Eq("Id", id);
             Specie specie  = _context.Species.Find(filter).FirstOrDefault();
-            int indice_foto = specie.Gallery.FindIndex(f => f.Id == id_photo);
-            specie.Gallery[indice_foto].Description = description;
+            int indice_item_galeria = specie.Gallery.FindIndex(f => f.Id == id_gallery_item);
+            specie.Gallery[indice_item_galeria].Description = _description;
             return Update(id, specie);
         }
 
-        public bool AddPhoto(int specieId, Photo photo)
+        public bool AddGalleryItem(int specieId, GalleryItem item)
         {
             Specie specie = getSpecie(specieId);
-            specie.Gallery.Add(photo);
+            specie.Gallery.Add(item);
             return Update(specie.Id, specie);
         }
 
@@ -178,9 +178,9 @@ namespace WebApplication.Repository
             {
                 var filtro_especie = Builders<Specie>.Filter.Eq("Id", id);
                 Specie specie = _context.Species.Find(filtro_especie).FirstOrDefault();
-                foreach(Photo photo in specie.Gallery) {
-                    var filtro_foto = Builders<Photo>.Filter.Eq("Id", photo.Id);
-                    _context.Photos.DeleteOne(filtro_foto);
+                foreach(GalleryItem item in specie.Gallery) {
+                    var filtro_item_galeria = Builders<GalleryItem>.Filter.Eq("Id", item.Id);
+                    _context.Photos.DeleteOne(filtro_item_galeria); //.Photos se refiere a GalleryItems en la base de datos
                 }
                 DeleteResult actionResult = _context.Species.DeleteOne(filtro_especie);
                 var filtro_pregunta = Builders<Question>.Filter.Eq("SpecieId", id);

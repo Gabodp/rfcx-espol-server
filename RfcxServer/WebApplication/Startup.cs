@@ -56,7 +56,7 @@ namespace WebApplication
             services.AddTransient<IDataRepository, DataRepository>();
             services.AddTransient<IInfoSensoresRepository, InfoSensoresRepository>();
             services.AddTransient<ISpecieRepository, SpecieRepository>();
-            services.AddTransient<IPhotoRepository, PhotoRepository>();
+            services.AddTransient<IGalleryItemRepository, GalleryItemRepository>();
             services.AddTransient<IQuestionRepository, QuestionRepository>();
             
             services.AddCors(options =>

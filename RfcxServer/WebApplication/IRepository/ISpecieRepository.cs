@@ -15,9 +15,9 @@ namespace WebApplication.IRepository
         bool Update(int SpecieId, Specie item);
         bool UpdateName(int id, string name);
         bool UpdateFamily(int id, string family);
-        bool UpdateGallery(int id, List<Photo> gallery);
-        bool UpdatePhoto(int id, int id_photo, string description);
-        bool AddPhoto(int specieId, Photo photo); 
+        bool UpdateGallery(int id, List<GalleryItem> gallery);
+        bool UpdateGalleryItem(int id, int id_photo, string description);
+        bool AddGalleryItem(int specieId, GalleryItem photo); 
         bool Remove(int id);
     }
 

@@ -13,7 +13,8 @@ namespace WebApplication.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Family { get; set; }
-        public List<Photo> Gallery { get; set; }
+        public List<GalleryItem> Gallery { get; set; }
+        public int audioSpecie;
 
         public int CompareTo(object obj)
         {
