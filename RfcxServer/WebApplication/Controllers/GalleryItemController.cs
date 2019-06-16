@@ -21,10 +21,10 @@ namespace WebApplication.Controllers
         [HttpGet()]
         public Task<string> Get()
         {
-            return this.GetPhoto();
+            return this.GetGalleryItem();
         }
 
-        private async Task<string> GetPhoto()
+        private async Task<string> GetGalleryItem()
         {
             var GalleryItem = _GalleryItemRepository.Get();
             return JsonConvert.SerializeObject(GalleryItem);
@@ -33,10 +33,10 @@ namespace WebApplication.Controllers
         [HttpGet("{id:int}")]
         public Task<string> Get(int id)
         {
-            return this.GetPhotoByIdInt(id);
+            return this.GetGalleryItemByIdInt(id);
         }
 
-        private async Task<string> GetPhotoByIdInt(int id)
+        private async Task<string> GetGalleryItemByIdInt(int id)
         {
             var GalleryItem = await _GalleryItemRepository.Get(id) ?? new GalleryItem();
             return JsonConvert.SerializeObject(GalleryItem);

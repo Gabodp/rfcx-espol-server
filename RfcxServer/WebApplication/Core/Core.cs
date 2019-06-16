@@ -220,6 +220,7 @@ namespace WebApplication {
 
 
         private static void GrantAccess(string fullPath) {
+            //Syscall.chown da error en windows porque asi se llama solo en Linux!!
             Syscall.chown(fullPath, Constants.USER_ID, Constants.GROUP_ID);//1000 es el UID y GID de estudiante (file, UID, GID)
             Syscall.chmod(fullPath, FilePermissions.ALLPERMS);
         }

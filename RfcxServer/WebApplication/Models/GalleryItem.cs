@@ -9,10 +9,10 @@ namespace WebApplication.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string MongoId { get; set; }
-        public int Id { get; set; } //id incrmental 
+        public int Id { get; set; } //id incremental 
         public string Description { get; set; }
-        public int audioname;//nombre del archivo de audi subido
-        public int imagename;//nombre del archivo de imagen subido
+        public string audioname { get; set; } //nombre del archivo de audio subido
+        public string imagename { get; set; }  //nombre del archivo de imagen subido
 
 
         public int CompareTo(object obj)

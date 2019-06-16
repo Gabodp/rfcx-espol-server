@@ -110,6 +110,8 @@ namespace WebApplication
             return JsonConvert.SerializeObject(Specie);
         }
 
+
+        //Utilizado para recuperar un gallery item, ya sea photo o audio, desde una carpeta
         [HttpGet("{specieId:int}/gallery/{photoId:int}")]
         public ActionResult Get(int specieId, int photoId)
         {
@@ -125,7 +127,7 @@ namespace WebApplication
                     if(extension[1] == "jpg" || extension[1] == "jpeg") {
                         return File(content, "image/jpeg", file.Name);
                     }else if (extension[1] == "png") {
-                        return File(content, "imagfe/png", file.Name);
+                        return File(content, "image/png", file.Name);
                     }else{
                         return File(content,"audio/mp3",file.Name);
                     }
@@ -137,7 +139,7 @@ namespace WebApplication
 
         [HttpPost] //REVISAR
         public async Task<IActionResult> Post(string nombre_especie, string familia, List<string> descripciones, 
-                                                List<IFormFile> archivos)
+                                                List<IFormFile> archivos)//AGREGAR OTRA VARIABLE QUE CONTENGA AUDIOS
         {
             string filePath;
             Task result;
@@ -153,14 +155,18 @@ namespace WebApplication
             //A Continuacion se guardan las imagenes ingresadas en el formulario
             //en su respectivo directorio 
             //Ejemplo de directorio: /var/rfcx-espol-server/resources/bpv/images/{especie(id)}/imagen(id).[jpeg/png]
-            for(int i = 1; i < (archivos.Count + 1); i++)
+            for(int i = 1; i < (archivos.Count + 1); i++)//podria ser 0 hastsa archivos.count
             {
                 GalleryItem item = new GalleryItem();
                 item.Description = descripciones[i - 1];
+                item.audioname = nombre_especie + "_audio_descripcion" + i.ToString();
+                item.imagename = nombre_especie + "_image_" + i.ToString();
                 _GalleryItemRepository.Add(item);
                 _SpecieRepository.AddGalleryItem(spe.Id, item);
                 string[] extension = (archivos[i - 1].FileName).Split('.');
+                //La siguiente linea solo trabaja con respecto al file imagenes.
                 filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.Id.ToString() + "." + extension[1]);
+                
                 if (archivos[i - 1].Length > 0)
                 {
                     using (var stream = new FileStream(filePath, FileMode.Create))
