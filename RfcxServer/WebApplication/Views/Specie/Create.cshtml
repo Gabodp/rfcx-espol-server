@@ -63,17 +63,23 @@
         <div id="subtitulo" class="form-group col-lg-12 col-md-12">
             <h4>Ingreso de imágenes</h4>
         </div>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-4 col-md-4">
             <label>Descripción: </label>
         </div>
-        <div class="col-lg-6 col-md-6">
-            <label>Archivo: </label>
+        <div class="col-lg-4 col-md-4">
+            <label>Archivo de Audio: </label>
+        </div>
+        <div class="col-lg-4 col-md-4">
+            <label>Archivo de Imagen: </label>
         </div>
         <div id="imagenes">
-            <div class="form-group col-lg-6 col-md-6 descripcion">
+            <div class="form-group col-lg-4 col-md-4 descripcion">
                 <textarea name="descripciones" class="form-control" rows="1" type="text" required></textarea>
             </div>
-            <div class="form-group col-lg-4 col-md-4 archivo">
+            <div class="form-group col-lg-3 col-md-3 audio">
+                <input name="audios" type="file" accept="audio/*" data-max-size="3000000" class="file" required>
+            </div>
+            <div class="form-group col-lg-3 col-md-3 archivo">
                 <input name="archivos" type="file" accept="image/*" data-max-size="3000000" class="file" required>
             </div>
             <div class="form-group botones_eliminar col-lg-1 col-md-1">
@@ -93,10 +99,11 @@
 </div>
 @section Scripts {
     <script>
-        var descripcion_inicial, archivo_inicial, boton_eliminar_inicial, valor;
+        var descripcion_inicial, audio_inicial, archivo_inicial, boton_eliminar_inicial, valor;
 
         $(document).ready(function() {
             descripcion_inicial = $($(".descripcion")[0]).clone(false, true);
+            audio_inicial = $($(".audio")[0]).clone(false,true);
             archivo_inicial = $($(".archivo")[0]).clone(false, true);
             boton_eliminar_inicial = $($(".botones_eliminar")[0]).clone(false, true);
             crearListener();
@@ -129,7 +136,15 @@
                                             "Sólo se aceptan imágenes con un tamaño máximo de 3 MB. " + 
                                             "Por favor, vuelva a escoger un archivo.");
                         }
-                    } else {
+                    }else if(tipo == 'audio/mpeg' ){
+                         if(tamanio > $(this).data('max-size')) {
+                            this.value = "";
+                            mostrarDialogo("El archivo es demasiado grande. " +
+                                            "Sólo se aceptan audios con un tamaño máximo de 3 MB. " + 
+                                            "Por favor, vuelva a escoger un archivo.");
+                        }
+                    }
+                    else {
                         this.value = "";
                         mostrarDialogo("El archivo no tiene el formato correcto. " +
                                         "Sólo se aceptan imágenes con extensión .jpg, .jpeg y .png. " + 
@@ -141,6 +156,7 @@
 
         function agregarImagen() {
 		    $(descripcion_inicial).clone(false, true).appendTo("#imagenes");
+            $(audio_inicial).clone(false,true).appendTo("#imagenes");
             $(archivo_inicial).clone(false, true).appendTo("#imagenes");
             $(boton_eliminar_inicial).css("display", "block").clone(false, true).appendTo("#imagenes");
             $("#boton_agregar").appendTo("#imagenes");
@@ -160,6 +176,7 @@
 
         function eliminarImagen(indice) {
             $($(".descripcion")[indice - 1]).remove();
+            $($(".audio")[indice - 1]).remove();
             $($(".archivo")[indice - 1]).remove();
             $($(".botones_eliminar")[indice - 1]).remove();
             restablecerIds();

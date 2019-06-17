@@ -65,12 +65,19 @@ namespace WebApplication
         public IActionResult Edit(int id) {
             ViewBag.especie = _SpecieRepository.Get(id);
             DirectoryInfo DI = new DirectoryInfo(Constants.RUTA_ARCHIVOS_IMAGENES_ESPECIES + id.ToString() + "/");
-            List<string> archivos = new List<string>();
+            List<string> imagenes = new List<string>();
+            List<string> audios = new List<string>();
             foreach (var file in DI.GetFiles())
             {
-                archivos.Add(file.Name);
+                string[] extension = (file.Name).Split('.');
+                if(extension[1]!= "mp3") {
+                    imagenes.Add(file.Name);
+                }else{
+                    audios.Add(file.Name);
+                }
             }
-            ViewBag.archivos = archivos;
+            ViewBag.imagenes = imagenes;
+            ViewBag.audios = audios;
             return View();
         }
 
@@ -115,7 +122,7 @@ namespace WebApplication
         [HttpGet("{specieId:int}/gallery/{photoId:int}")]
         public ActionResult Get(int specieId, int photoId)
         {
-            DirectoryInfo DI = new DirectoryInfo(Constants.test + specieId.ToString() + "/");
+            DirectoryInfo DI = new DirectoryInfo(Constants.RUTA_ARCHIVOS_IMAGENES_ESPECIES + specieId.ToString() + "/");
             foreach (var file in DI.GetFiles())
             {
                 string[] extension = (file.Name).Split('.');
@@ -129,7 +136,7 @@ namespace WebApplication
                     }else if (extension[1] == "png") {
                         return File(content, "image/png", file.Name);
                     }else{
-                        return File(content,"audio/mp3",file.Name);
+                        return File(content,"audio/mpeg",file.Name);
                     }
                 }
             }     
@@ -139,9 +146,11 @@ namespace WebApplication
 
         [HttpPost] //REVISAR
         public async Task<IActionResult> Post(string nombre_especie, string familia, List<string> descripciones, 
-                                                List<IFormFile> archivos)//AGREGAR OTRA VARIABLE QUE CONTENGA AUDIOS
+                                                List<IFormFile> archivos,List<IFormFile> audios)
+                                                //AGREGAR OTRA VARIABLE QUE CONTENGA AUDIOS
         {
-            string filePath;
+            string imageFilePath;
+            string audioFilePath;
             Task result;
 
             Specie spe = new Specie();
@@ -159,19 +168,28 @@ namespace WebApplication
             {
                 GalleryItem item = new GalleryItem();
                 item.Description = descripciones[i - 1];
-                item.audioname = nombre_especie + "_audio_descripcion" + i.ToString();
+
+                item.audioname = nombre_especie + "_audio_descripcion_" + i.ToString();
                 item.imagename = nombre_especie + "_image_" + i.ToString();
+
                 _GalleryItemRepository.Add(item);
                 _SpecieRepository.AddGalleryItem(spe.Id, item);
+
                 string[] extension = (archivos[i - 1].FileName).Split('.');
+                string[] extensionAudio = (audios[i-1].FileName).Split('.');
                 //La siguiente linea solo trabaja con respecto al file imagenes.
-                filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.Id.ToString() + "." + extension[1]);
-                
+                //filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.Id.ToString() + "." + extension[1]);
+                imageFilePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.imagename + "." + extension[1]);
+                audioFilePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.audioname + "." + extensionAudio[1]);
                 if (archivos[i - 1].Length > 0)
                 {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    using (var stream = new FileStream(imageFilePath, FileMode.Create))
                     {
                         await archivos[i - 1].CopyToAsync(stream);
+                    }
+                    using (var stream = new FileStream(audioFilePath, FileMode.Create))
+                    {
+                        await audios[i - 1].CopyToAsync(stream);
                     }
                 }
             }
