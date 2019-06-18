@@ -70,7 +70,7 @@ namespace WebApplication
             foreach (var file in DI.GetFiles())
             {
                 string[] extension = (file.Name).Split('.');
-                if(extension[1]!= "mp3") {
+                if(extension[1]!= "ogg") {
                     imagenes.Add(file.Name);
                 }else{
                     audios.Add(file.Name);
@@ -119,24 +119,31 @@ namespace WebApplication
 
 
         //Utilizado para recuperar un gallery item, ya sea photo o audio, desde una carpeta
-        [HttpGet("{specieId:int}/gallery/{photoId:int}")]
-        public ActionResult Get(int specieId, int photoId)
+        //tipoArchivo es un string que especifica si es una image o audio. 
+
+        //EN EL FUTURO SE PUEDE SEPARAR EN DOS O TRES REQUERIMIENTOS PARA AUDIOS IMAGENES O AUDIODESCRIPCION
+        [HttpGet("{specieId:int}/gallery/{tipoArchivo}/{itemId:int}")]
+        public ActionResult Get(int specieId,string tipoArchivo, int itemId)
         {
             DirectoryInfo DI = new DirectoryInfo(Constants.RUTA_ARCHIVOS_IMAGENES_ESPECIES + specieId.ToString() + "/");
             foreach (var file in DI.GetFiles())
             {
                 string[] extension = (file.Name).Split('.');
-                if(extension[0] == photoId.ToString()) {
+                string[] numeroItem = (extension[0]).Split('_');
+                //if(extension[0] == itemId.ToString()) {
+                if(numeroItem.Last() == itemId.ToString()){
                     string fileAddress = DI.FullName + file.Name;
                     var net = new System.Net.WebClient();
                     var data = net.DownloadData(fileAddress);
                     var content = new System.IO.MemoryStream(data);
-                    if(extension[1] == "jpg" || extension[1] == "jpeg") {
-                        return File(content, "image/jpeg", file.Name);
-                    }else if (extension[1] == "png") {
-                        return File(content, "image/png", file.Name);
-                    }else{
-                        return File(content,"audio/mpeg",file.Name);
+                    if(tipoArchivo.Equals("image")){
+                        if(extension[1] == "jpg" || extension[1] == "jpeg") {
+                            return File(content, "image/jpeg", file.Name);
+                        }else if(tipoArchivo.Equals("image")  && (extension[1] == "png")) {
+                            return File(content, "image/png", file.Name);
+                        }
+                    }else if(tipoArchivo.Equals("audio") && extension[1] == "ogg" ){
+                        return File(content,"audio/ogg",file.Name);
                     }
                 }
             }     
@@ -147,7 +154,7 @@ namespace WebApplication
         [HttpPost] //REVISAR
         public async Task<IActionResult> Post(string nombre_especie, string familia, List<string> descripciones, 
                                                 List<IFormFile> archivos,List<IFormFile> audios)
-                                                //AGREGAR OTRA VARIABLE QUE CONTENGA AUDIOS
+                                                //AGREGADA OTRA VARIABLE QUE CONTENGA AUDIOS
         {
             string imageFilePath;
             string audioFilePath;
@@ -161,7 +168,7 @@ namespace WebApplication
 
             Core.MakeSpecieFolder(spe.Id.ToString()); // MODIFICAR PARA CREAR CARPETA
 
-            //A Continuacion se guardan las imagenes ingresadas en el formulario
+            //A Continuacion se guardan las imagenes y audios ingresados en el formulario
             //en su respectivo directorio 
             //Ejemplo de directorio: /var/rfcx-espol-server/resources/bpv/images/{especie(id)}/imagen(id).[jpeg/png]
             for(int i = 1; i < (archivos.Count + 1); i++)//podria ser 0 hastsa archivos.count
@@ -178,6 +185,7 @@ namespace WebApplication
                 string[] extension = (archivos[i - 1].FileName).Split('.');
                 string[] extensionAudio = (audios[i-1].FileName).Split('.');
                 //La siguiente linea solo trabaja con respecto al file imagenes.
+                //ACTUALIZADO: Se agrego para guardar audios.
                 //filePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.Id.ToString() + "." + extension[1]);
                 imageFilePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.imagename + "." + extension[1]);
                 audioFilePath = Path.Combine(Core.SpecieFolderPath(spe.Id.ToString()), item.audioname + "." + extensionAudio[1]);

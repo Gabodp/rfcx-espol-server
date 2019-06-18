@@ -112,11 +112,12 @@
             <h4>Imágenes</h4>
         </div>
         @for (var i = 0; i < @ViewBag.especie.Gallery.Count; i++)
-        {
+        {   
+                
             <div class="form-group col-lg-4 col-md-6 col-sm-12 col-xs-12" id="div_imagen_@ViewBag.especie.Gallery[i].Id">
                 <div class="imagen">
                     <span class="boton_eliminar">
-                        <i class="material-icons" onclick="mostrarAlerta(@ViewBag.especie.Gallery[i].Id);">delete</i>
+                        <i class="material-icons" onclick = "mostrarAlerta(@ViewBag.especie.Gallery[i].Id)">delete</i>
                     </span>  
                     <img class="img-responsive" 
                     src="/resources/bpv/images/species/@ViewBag.especie.Id/@ViewBag.imagenes[i]">
@@ -130,9 +131,9 @@
                 <div class="div_audio">
                     <label> AudioDescripcion: </label>
                     <audio controls>
-                        <source src="/resources/bpv/images/species/@ViewBag.especie.Id/@ViewBag.audios[i]"
-                         type="audio/mp3" preload= "auto">
-
+                        <source src ="/resources/bpv/images/species/@ViewBag.especie.Id/@ViewBag.audios[i]"
+                         type="audio/ogg">
+                        Su navegador no soporta el tag audio.
                     </audio>
                 </div>
             </div>
