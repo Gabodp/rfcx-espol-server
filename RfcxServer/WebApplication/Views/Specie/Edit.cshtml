@@ -143,15 +143,18 @@
         </div>
         <input type="hidden" id="numero_imagenes" value="@ViewBag.especie.Gallery.Count">
     </form>
-    <form id="form_agregar_imagenes" method="post" enctype="multipart/form-data" action="/api/bpv/specie/@ViewBag.especie.Id/addPhotos/">
+    <form id="form_agregar_imagenes" method="post" enctype="multipart/form-data" action="/api/bpv/specie/@ViewBag.especie.Id/addGalleryItem/">
         <div class="form-group col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h4>Agregar imágenes</h4>
         </div>
         <div id="imagenes">
-            <div class="form-group col-lg-6 col-md-6 descripcion">
+            <div class="form-group col-lg-4 col-md-4 descripcion">
                 <textarea name="descripciones" class="form-control" rows="1" type="text" required></textarea>
             </div>
-            <div class="form-group col-lg-4 col-md-4 archivo">
+            <div class="form-group col-lg-3 col-md-3 audio">
+                <input name="audios" type="file" accept="audio/*" data-max-size="3000000" class="file" required>
+            </div>
+            <div class="form-group col-lg-3 col-md-3 archivo">
                 <input name="archivos" type="file" accept="image/*" data-max-size="3000000" class="file" required>
             </div>
             <div class="form-group botones_eliminar col-lg-1 col-md-1">
@@ -192,12 +195,13 @@
 </div>
 @section Scripts {
     <script>
-        var descripcion_inicial, archivo_inicial, boton_eliminar_inicial, valor;
+        var descripcion_inicial, imagen_inicial, audio_inicial, boton_eliminar_inicial, valor;
 
         $(document).ready(function(){
             specie_input_changed = [];
             descripcion_inicial = $($(".descripcion")[0]).clone(false, true);
-            archivo_inicial = $($(".archivo")[0]).clone(false, true);
+            imagen_inicial = $($(".archivo")[0]).clone(false, true);
+            audio_inicial = $($(".audio")[0]).clone(false, true);
             boton_eliminar_inicial = $($(".botones_eliminar")[0]).clone(false, true);
             crearListener();
             $(".imagen").height($($(".imagen")[0]).width() * 0.6);
@@ -270,7 +274,8 @@
 
         function agregarImagen() {
 		    $(descripcion_inicial).clone(false, true).appendTo("#imagenes");
-            $(archivo_inicial).clone(false, true).appendTo("#imagenes");
+            $(audio_inicial).clone(false, true).appendTo("#imagenes");
+            $(imagen_inicial).clone(false, true).appendTo("#imagenes");
             $(boton_eliminar_inicial).css("display", "block").clone(false, true).appendTo("#imagenes");
             $("#boton_agregar").appendTo("#imagenes");
             if($(".descripcion").length > 1)
@@ -289,6 +294,7 @@
 
         function eliminarImagen(indice) {
             $($(".descripcion")[indice - 1]).remove();
+            $($(".audio")[indice - 1]).remove();
             $($(".archivo")[indice - 1]).remove();
             $($(".botones_eliminar")[indice - 1]).remove();
             restablecerIds();
@@ -314,6 +320,7 @@
             for(esp of specie_input_changed) {
                 var obj = {};
                 var campo = getField(esp);
+                
                 var value = $("input#" + esp).val();
                 if(value == undefined) {
                     var value = $("textarea#" + esp).val();
@@ -323,7 +330,7 @@
                 }
                 if(campo == "Gallery") {
                     var array = esp.split("_");
-                    obj["IdPhoto"] = array[1];
+                    obj["Id"] = array[1];//Antes era IdPhoto
                 }
                 var data = JSON.stringify(obj);
                 $.ajax({

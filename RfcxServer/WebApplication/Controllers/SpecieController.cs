@@ -176,8 +176,8 @@ namespace WebApplication
                 GalleryItem item = new GalleryItem();
                 item.Description = descripciones[i - 1];
 
-                item.audioname = nombre_especie + "_audio_descripcion_" + i.ToString();
-                item.imagename = nombre_especie + "_image_" + i.ToString();
+                item.audioname = nombre_especie + "_audio_descripcion_" + (i-1).ToString();
+                item.imagename = nombre_especie + "_image_" + (i-1).ToString();
 
                 _GalleryItemRepository.Add(item);
                 _SpecieRepository.AddGalleryItem(spe.Id, item);
@@ -260,8 +260,8 @@ namespace WebApplication
             return true;
         }
 
-        [HttpPost("{id:int}/addPhotos")]
-        public async Task<IActionResult> addPhotos(int id, List<string> descripciones, List<IFormFile> archivos)
+        [HttpPost("{id:int}/addGalleryItem")]
+        public async Task<IActionResult> addGalleryItem(int id, List<string> descripciones, List<IFormFile> archivos)
         {
             string filePath;
             Task result = null;

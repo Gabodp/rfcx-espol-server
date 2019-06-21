@@ -14,7 +14,7 @@ namespace WebApplication.Models
         public string Name { get; set; }
         public string Family { get; set; }
         public List<GalleryItem> Gallery { get; set; }
-        public int audioSpecie;
+        public string audioSpecie {get; set;}
 
         public int CompareTo(object obj)
         {
